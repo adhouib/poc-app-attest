@@ -1,0 +1,106 @@
+{
+	"info": {
+		"_postman_id": "0214db09-4297-4ae5-a28b-cce4bde03f63",
+		"name": "AppAttest Test",
+		"description": "Tests for App Attest API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26603212"
+	},
+	"item": [
+		{
+			"name": "Attest - Init",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/attest/init?deviceId=11EE22AA",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"attest",
+						"init"
+					],
+					"query": [
+						{
+							"key": "deviceId",
+							"value": "11EE22AA"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "verify",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"deviceId\": \"11EE22AA\",\n  \"attestationObject\": \"BASE64_ENCODED_ATTESTATION_OBJECT\",\n  \"clientDataHash\": \"BASE64_SHA256_NONCE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/attest/verify",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"attest",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assertion Check",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"deviceId\": \"test-device-123\",\n  \"assertion\": \"BASE64_SIGNATURE\",\n  \"clientDataHash\": \"BASE64_CLIENT_HASH\",\n  \"authenticatorData\": \"BASE64_AUTHENTICATOR_DATA\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/assertion/verify",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"assertion",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
