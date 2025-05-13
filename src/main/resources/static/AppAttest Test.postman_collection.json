@@ -101,6 +101,112 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Init V2 ",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response must have required fields\", function () {",
+							"  const responseData = pm.response.json();",
+							"",
+							"  pm.expect(responseData).to.be.an('object');",
+							"  pm.expect(responseData.deviceId).to.exist;",
+							"  pm.expect(responseData.attestationObject).to.exist;",
+							"  pm.expect(responseData.clientDataHash).to.exist;",
+							"",
+							"    pm.environment.set(\"attestationObject\", responseData.attestationObject);",
+							"    pm.environment.set(\"deviceId\", responseData.deviceId);",
+							"        pm.environment.set(\"clientDataHash\", responseData.clientDataHash);",
+							"         pm.environment.set(\"challenge\", responseData.challenge);",
+							"});",
+							"",
+							"",
+							"pm.test(\"DeviceId is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.deviceId).to.be.a('string').and.to.have.lengthOf.at.least(1, \"DeviceId should be a non-empty string\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is within an acceptable range\", function () {",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/appattest/v2/init?deviceId=device11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"appattest",
+						"v2",
+						"init"
+					],
+					"query": [
+						{
+							"key": "deviceId",
+							"value": "device11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify v2",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"challenge\": \"{{challenge}}\",\n  \"deviceId\": \"{{deviceId}}\",\n  \"attestationObject\": \"{{attestationObject}}\",\n  \"clientDataHash\": \"{{clientDataHash}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/appattest/v2/validate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"appattest",
+						"v2",
+						"validate"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
