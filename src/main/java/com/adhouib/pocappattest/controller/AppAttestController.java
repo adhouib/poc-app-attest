@@ -1,14 +1,14 @@
 package com.adhouib.pocappattest.controller;
 
 import com.adhouib.pocappattest.model.AppAttestationEntity;
+import com.adhouib.pocappattest.model.AssertionRequest;
 import com.adhouib.pocappattest.model.AttestationRequest;
-import com.adhouib.pocappattest.model.DeviceNonce;
 import com.adhouib.pocappattest.repository.AppAttestationRepository;
-import com.adhouib.pocappattest.repository.DeviceNonceRepository;
+import com.adhouib.pocappattest.service.AppAttestationService;
 import com.adhouib.pocappattest.service.AttestationCheckService;
-import com.adhouib.pocappattest.service.DeviceNonceService;
+import com.adhouib.pocappattest.service.ChallengeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.cert.CertificateFactory;
@@ -23,13 +23,15 @@ import java.util.Base64;
 public class AppAttestController {
 
     private final AttestationCheckService verifier;
-    private final DeviceNonceService deviceNonceService;
+    private final ChallengeService challengeService;
     private final AppAttestationRepository appAttestationRepository;
+    private final AppAttestationService appAttestationService;
+
 
     // Endpoint pour générer un nonce et le sauvegarder avec un deviceId
     @PostMapping("/init")
     public AppAttestationEntity generateNonce(@RequestParam String deviceId) {
-        return deviceNonceService.generateAndSaveNonce(deviceId);
+        return challengeService.generateAndSaveNonce(deviceId);
     }
 
     @PostMapping("/verify")
@@ -58,5 +60,20 @@ public class AppAttestController {
                 request.getDeviceId(),
                 appleRootCA
         );
+    }
+
+    @PostMapping("/assertion/verify")
+    public ResponseEntity<Boolean> verifyAssertion(@RequestBody AssertionRequest request) {
+        byte[] assertionBytes = Base64.getDecoder().decode(request.getAssertion());
+        byte[] clientDataHashBytes = Base64.getDecoder().decode(request.getClientDataHash());
+        byte[] authenticatorDataBytes = Base64.getDecoder().decode(request.getAuthenticatorData());
+
+        boolean isValid = appAttestationService.verifyAssertion(
+                request.getDeviceId(),
+                assertionBytes,
+                clientDataHashBytes,
+                authenticatorDataBytes);
+
+        return ResponseEntity.ok(isValid);
     }
 }
